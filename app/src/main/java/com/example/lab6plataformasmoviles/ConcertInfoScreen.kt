@@ -19,8 +19,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.compose.foundation.clickable
+import androidx.navigation.compose.rememberNavController
 import com.example.lab6plataformasmoviles.ui.theme.InfoConciertoTheme
-
 
 class ConcertInfoActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +31,7 @@ class ConcertInfoActivity : ComponentActivity() {
         setContent {
             InfoConciertoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ConcertInfoScreen(modifier = Modifier.padding(innerPadding))
+                    ConcertInfoScreen(navController = rememberNavController(), modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -37,7 +39,7 @@ class ConcertInfoActivity : ComponentActivity() {
 }
 
 @Composable
-fun ConcertInfoScreen(modifier: Modifier = Modifier) {
+fun ConcertInfoScreen(navController: NavController, modifier: Modifier = Modifier) {
     val concertsList = remember { mutableStateListOf(*conciertos.toTypedArray()) }
 
     LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
@@ -60,6 +62,12 @@ fun ConcertInfoScreen(modifier: Modifier = Modifier) {
                             modifier = Modifier.weight(1f),
                             onFavoriteClick = {
                                 concert.isFavorite = !concert.isFavorite
+                                concertsList[concertsList.indexOf(concert)] = concert.copy()
+                                navController.navigate("favorites")
+
+                            },
+                            onCardClick = {
+                                navController.navigate("concert_detail/${concert.id}")
                             }
                         )
                     }
@@ -92,6 +100,12 @@ fun ConcertInfoScreen(modifier: Modifier = Modifier) {
                         modifier = Modifier.weight(1f),
                         onFavoriteClick = {
                             concert.isFavorite = !concert.isFavorite
+                            concertsList[concertsList.indexOf(concert)] = concert.copy()
+                            navController.navigate("favorites")
+
+                        },
+                        onCardClick = {
+                            navController.navigate("concert_detail/${concert.id}")
                         }
                     )
                 }
@@ -101,12 +115,17 @@ fun ConcertInfoScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ConcertCard(concert: Concierto, modifier: Modifier = Modifier, onFavoriteClick: () -> Unit) {
-
+fun ConcertCard(
+    concert: Concierto,
+    modifier: Modifier = Modifier,
+    onFavoriteClick: () -> Unit,
+    onCardClick: () -> Unit
+) {
     Card(
         modifier = modifier
             .padding(8.dp)
-            .aspectRatio(1f),
+            .aspectRatio(1f)
+            .clickable { onCardClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Column {

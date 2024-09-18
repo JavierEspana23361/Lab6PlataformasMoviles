@@ -1,6 +1,5 @@
 package com.example.lab6plataformasmoviles
 
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -44,12 +43,12 @@ fun NavigationHost(navController: NavHostController, modifier: Modifier = Modifi
     ) {
         composable("concert_list") { ConcertListScreen(navController) }
         composable("profile") { ProfileScreen() }
-        composable("favorites") { ConcertInfoScreen() }
+        composable("favorites") { ConcertInfoScreen(navController) }
         composable("concert_detail/{concertId}") { backStackEntry ->
             val concertId = backStackEntry.arguments?.getString("concertId")
-            ConcertDetailScreen(concertId = concertId)
+            if (concertId != null) {
+                ConcertDetailScreen(concertId = concertId)
+            }
         }
     }
 }
-
-
